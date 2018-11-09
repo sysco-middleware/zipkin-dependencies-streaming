@@ -43,6 +43,13 @@
       <artifactId>zipkin</artifactId>
       <version>2.11.6</version>
     </dependency>
+
+    <dependency>
+      <groupId>no.sysco.middleware.kafka</groupId>
+      <artifactId>kafka-util-streams-graphviz</artifactId>
+      <version>0.1.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

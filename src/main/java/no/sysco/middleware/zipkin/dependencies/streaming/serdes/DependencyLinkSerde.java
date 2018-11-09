@@ -10,53 +10,64 @@ import zipkin2.codec.DependencyLinkBytesEncoder;
 import java.util.Map;
 
 public class DependencyLinkSerde implements Serde<DependencyLink> {
-    @Override
-    public void configure(Map<String, ?> configs, boolean isKey) {
 
-    }
+	@Override
+	public void configure(Map<String, ?> configs, boolean isKey) {
+		// Nothing to configure
+	}
 
-    @Override
-    public void close() {
-    }
+	@Override
+	public void close() {
+		// No resources to close
+	}
 
-    @Override
-    public Serializer<DependencyLink> serializer() {
-        return new DependencyLinkSerializer();
-    }
+	@Override
+	public Serializer<DependencyLink> serializer() {
+		return new DependencyLinkSerializer();
+	}
 
-    @Override
-    public Deserializer<DependencyLink> deserializer() {
-        return new DependencyLinkDeserializer();
-    }
+	@Override
+	public Deserializer<DependencyLink> deserializer() {
+		return new DependencyLinkDeserializer();
+	}
 
-    public static class DependencyLinkDeserializer implements Deserializer<DependencyLink> {
-        @Override
-        public void configure(Map<String, ?> configs, boolean isKey) {
-        }
+	public static class DependencyLinkDeserializer
+			implements Deserializer<DependencyLink> {
 
-        @Override
-        public DependencyLink deserialize(String topic, byte[] data) {
-            return DependencyLinkBytesDecoder.JSON_V1.decodeOne(data);
-        }
+		@Override
+		public void configure(Map<String, ?> configs, boolean isKey) {
+			// Nothing to configure
+		}
 
-        @Override
-        public void close() {
+		@Override
+		public DependencyLink deserialize(String topic, byte[] data) {
+			return DependencyLinkBytesDecoder.JSON_V1.decodeOne(data);
+		}
 
-        }
-    }
+		@Override
+		public void close() {
+			// No resources to close
+		}
 
-    public static class DependencyLinkSerializer implements Serializer<DependencyLink> {
-        @Override
-        public void configure(Map<String, ?> configs, boolean isKey) {
-        }
+	}
 
-        @Override
-        public byte[] serialize(String topic, DependencyLink data) {
-            return DependencyLinkBytesEncoder.JSON_V1.encode(data);
-        }
+	public static class DependencyLinkSerializer implements Serializer<DependencyLink> {
 
-        @Override
-        public void close() {
-        }
-    }
+		@Override
+		public void configure(Map<String, ?> configs, boolean isKey) {
+			// Nothing to configure
+		}
+
+		@Override
+		public byte[] serialize(String topic, DependencyLink data) {
+			return DependencyLinkBytesEncoder.JSON_V1.encode(data);
+		}
+
+		@Override
+		public void close() {
+			// No resources to close
+		}
+
+	}
+
 }

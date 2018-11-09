@@ -13,11 +13,12 @@ import java.util.Map;
 public class DependencyLinksSerde implements Serde<List<DependencyLink>> {
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-
+        //Nothing to configure
     }
 
     @Override
     public void close() {
+        //No resources to close
     }
 
     @Override
@@ -33,6 +34,7 @@ public class DependencyLinksSerde implements Serde<List<DependencyLink>> {
     public static class DependencyLinksDeserializer implements Deserializer<List<DependencyLink>> {
         @Override
         public void configure(Map<String, ?> configs, boolean isKey) {
+            //Nothing to configure
         }
 
         @Override
@@ -42,13 +44,14 @@ public class DependencyLinksSerde implements Serde<List<DependencyLink>> {
 
         @Override
         public void close() {
-
+            //No resources to close
         }
     }
 
     public static class DependencyLinksSerializer implements Serializer<List<DependencyLink>> {
         @Override
         public void configure(Map<String, ?> configs, boolean isKey) {
+            //Nothing to configure
         }
 
         @Override
@@ -58,6 +61,7 @@ public class DependencyLinksSerde implements Serde<List<DependencyLink>> {
 
         @Override
         public void close() {
+            //No resources to close
         }
     }
 }

@@ -20,29 +20,45 @@ import java.util.List;
 
 class StreamProcessSupplier {
 
+	static final Charset UTF_8 = Charset.forName("UTF-8");
+
+	static final String DEPENDENCY_PAIR_PATTERN = "%s-%s";
+
+	final SpanBytesDecoder spanBytesDecoder;
+
+	final SpanSerde spanSerde;
+
+	final SpansSerde spansSerde;
+
+	StreamProcessSupplier(String format) {
+		this.spanBytesDecoder = SpanBytesDecoder.valueOf(format);
+		this.spanSerde = new SpanSerde(format);
+		this.spansSerde = new SpansSerde(format);
+	}
+
 	StreamProcessSupplier() {
+		this(SpanBytesDecoder.JSON_V2.name());
 	}
 
 	Topology build() {
 		var builder = new StreamsBuilder();
 		builder.stream("zipkin", Consumed.with(Serdes.String(), Serdes.String()))
-				.mapValues(value -> SpanBytesDecoder.JSON_V2
-						.decodeList(value.getBytes(Charset.defaultCharset())))
+				.mapValues(value -> spanBytesDecoder.decodeList(value.getBytes(UTF_8)))
 				.flatMapValues((readOnlyKey, value) -> value)
 				.groupBy((key, value) -> value.traceId(),
-						Serialized.with(Serdes.String(), new SpanSerde()))
+						Serialized.with(Serdes.String(), spanSerde))
 				.aggregate(ArrayList::new,
 						(String key, Span value, List<Span> aggregate) -> {
 							aggregate.add(value);
 							return aggregate;
-						}, Materialized.with(Serdes.String(), new SpansSerde()))
+						}, Materialized.with(Serdes.String(), spansSerde))
 				.toStream()
 				.mapValues(
 						value -> new DependencyLinker().putTrace(value.iterator()).link())
 				.flatMapValues(value -> value)
 				.groupBy(
-						(key, value) -> String.format("%s-%s", value.parent(),
-								value.child()),
+						(key, value) -> String.format(DEPENDENCY_PAIR_PATTERN,
+								value.parent(), value.child()),
 						Serialized.with(Serdes.String(), new DependencyLinkSerde()))
 				.reduce((l, r) -> DependencyLink.newBuilder().parent(l.parent())
 						.child(l.child()).callCount(l.callCount() + r.callCount())
