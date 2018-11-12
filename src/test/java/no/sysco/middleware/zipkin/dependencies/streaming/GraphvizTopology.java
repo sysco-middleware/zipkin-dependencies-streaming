@@ -1,6 +1,7 @@
 package no.sysco.middleware.zipkin.dependencies.streaming;
 
 import no.sysco.middleware.kafka.util.StreamsTopologyGraphviz;
+import no.sysco.middleware.zipkin.dependencies.streaming.storage.StdoutDependencyStorage;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +20,8 @@ public class GraphvizTopology {
 			buffer.append("@startuml\n");
 			buffer.newLine();
 			buffer.write(StreamsTopologyGraphviz
-					.print(new StreamProcessSupplier().build())
+					.print(new StreamProcessSupplier(new StdoutDependencyStorage(),
+							"zipkin", "zipkin-dependency").build())
 					// Support plantuml comment line
 					.replace("#", "'"));
 			buffer.newLine();
