@@ -16,3 +16,7 @@ local-docker: build
 .PHONY: publish-docker
 publish-docker: build
 	mvn jib:build
+
+.PHONY: dc-up
+dc-up:
+	docker-compose up -d
