@@ -16,7 +16,6 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Serialized;
 import org.apache.kafka.streams.kstream.SessionWindows;
-import org.apache.kafka.streams.kstream.TimeWindows;
 import zipkin2.DependencyLink;
 import zipkin2.Span;
 import zipkin2.codec.SpanBytesDecoder;
