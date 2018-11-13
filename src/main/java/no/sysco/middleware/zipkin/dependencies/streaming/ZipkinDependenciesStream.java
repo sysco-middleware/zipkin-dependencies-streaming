@@ -1,7 +1,7 @@
 package no.sysco.middleware.zipkin.dependencies.streaming;
 
 import com.typesafe.config.ConfigFactory;
-import no.sysco.middleware.zipkin.dependencies.streaming.storage.CassandraDepedencyStorage;
+import no.sysco.middleware.zipkin.dependencies.streaming.storage.CassandraDependencyStorage;
 import no.sysco.middleware.zipkin.dependencies.streaming.storage.ElasticsearchDependencyStorage;
 import no.sysco.middleware.zipkin.dependencies.streaming.storage.StdoutDependencyStorage;
 import org.apache.kafka.streams.KafkaStreams;
@@ -15,13 +15,13 @@ public class ZipkinDependenciesStream {
 		final var appConfig = AppConfig.build(config);
 
 		final var dependencyStorage = buildStorage(appConfig);
-		final var streamProcess = new StreamProcessSupplier(appConfig.zipkin.format,
-				dependencyStorage, appConfig.zipkin.topics.span,
-				appConfig.zipkin.topics.dependency);
+		final var streamProcess = new StreamProcessSupplier(appConfig.format,
+				dependencyStorage, appConfig.kafkaStreams.topics.span,
+				appConfig.kafkaStreams.topics.dependency);
 		final var topology = streamProcess.build();
 
 		final var kafkaStreams = new KafkaStreams(topology,
-				appConfig.kafkaStream.config());
+				appConfig.kafkaStreams.config());
 
 		kafkaStreams.start();
 
@@ -29,18 +29,18 @@ public class ZipkinDependenciesStream {
 	}
 
 	static DependencyStorage buildStorage(AppConfig appConfig) {
-		switch (appConfig.zipkin.storage.type) {
+		switch (appConfig.storage.type) {
 		case ELASTICSEARCH:
 			final var restHighLevelClient = new RestHighLevelClient(
-					RestClient.builder(appConfig.zipkin.storage.elasticsearch.nodes()));
-			final var dateSeparator = appConfig.zipkin.storage.elasticsearch.dateSeparator;
-			final var index = appConfig.zipkin.storage.elasticsearch.index;
+					RestClient.builder(appConfig.storage.elasticsearch.nodes()));
+			final var dateSeparator = appConfig.storage.elasticsearch.dateSeparator;
+			final var index = appConfig.storage.elasticsearch.index;
 			return new ElasticsearchDependencyStorage(restHighLevelClient, index,
 					dateSeparator);
 		case CASSANDRA:
-			final var keyspace = appConfig.zipkin.storage.cassandra.keyspace;
-			final var addresses = appConfig.zipkin.storage.cassandra.addresses;
-			return new CassandraDepedencyStorage(keyspace, addresses);
+			final var keyspace = appConfig.storage.cassandra.keyspace;
+			final var addresses = appConfig.storage.cassandra.addresses;
+			return new CassandraDependencyStorage(keyspace, addresses);
 		case STDOUT:
 			return new StdoutDependencyStorage();
 		}

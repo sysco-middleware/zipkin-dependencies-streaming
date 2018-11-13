@@ -12,24 +12,30 @@ import static org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST;
 
 class AppConfig {
 
-	final KafkaStream kafkaStream;
+	final KafkaStreams kafkaStreams;
 
-	final Zipkin zipkin;
+	final String format;
 
-	private AppConfig(KafkaStream kafkaStream, Zipkin zipkin) {
-		this.kafkaStream = kafkaStream;
-		this.zipkin = zipkin;
+	final Storage storage;
+
+	private AppConfig(KafkaStreams kafkaStreams, String format, Storage storage) {
+		this.kafkaStreams = kafkaStreams;
+		this.format = format;
+		this.storage = storage;
 	}
 
-	static class KafkaStream {
+	static class KafkaStreams {
 
 		final String bootstrapServers;
 
 		final String applicationId;
 
-		KafkaStream(String bootstrapServers, String applicationId) {
+		final Topics topics;
+
+		KafkaStreams(String bootstrapServers, String applicationId, Topics topics) {
 			this.bootstrapServers = bootstrapServers;
 			this.applicationId = applicationId;
+			this.topics = topics;
 		}
 
 		Properties config() {
@@ -39,22 +45,6 @@ class AppConfig {
 			streamsConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
 					EARLIEST.name().toLowerCase());
 			return streamsConfig;
-		}
-
-	}
-
-	static class Zipkin {
-
-		final String format;
-
-		final Storage storage;
-
-		final Topics topics;
-
-		Zipkin(String format, Storage storage, Topics topics) {
-			this.format = format;
-			this.topics = topics;
-			this.storage = storage;
 		}
 
 		static class Topics {
@@ -70,91 +60,90 @@ class AppConfig {
 
 		}
 
-		static class Storage {
+	}
 
-			final StorageType type;
+	static class Storage {
 
-			final ElasticsearchStorage elasticsearch;
+		final StorageType type;
 
-			final CassandraStorage cassandra;
+		final ElasticsearchStorage elasticsearch;
 
-			Storage(StorageType type, ElasticsearchStorage elasticsearch,
-					CassandraStorage cassandra) {
-				this.type = type;
-				this.elasticsearch = elasticsearch;
-				this.cassandra = cassandra;
+		final CassandraStorage cassandra;
+
+		Storage(StorageType type, ElasticsearchStorage elasticsearch,
+				CassandraStorage cassandra) {
+			this.type = type;
+			this.elasticsearch = elasticsearch;
+			this.cassandra = cassandra;
+		}
+
+		static class ElasticsearchStorage {
+
+			final String index;
+
+			final String urls;
+
+			final String dateSeparator;
+
+			ElasticsearchStorage(String index, String urls, String dateSeparator) {
+				this.index = index;
+				this.urls = urls;
+				this.dateSeparator = dateSeparator;
 			}
 
-			static class ElasticsearchStorage {
-
-				final String index;
-
-				final String urls;
-
-				final String dateSeparator;
-
-				ElasticsearchStorage(String index, String urls, String dateSeparator) {
-					this.index = index;
-					this.urls = urls;
-					this.dateSeparator = dateSeparator;
-				}
-
-				HttpHost[] nodes() {
-					return List.of(urls.split(",")).stream().map(HttpHost::create)
-							.toArray(HttpHost[]::new);
-				}
-
-			}
-
-			static class CassandraStorage {
-
-				final String keyspace;
-
-				final String[] addresses;
-
-				CassandraStorage(String keyspace, String addresses) {
-					this.keyspace = keyspace;
-					this.addresses = addresses.split(",");
-				}
-
+			HttpHost[] nodes() {
+				return List.of(urls.split(",")).stream().map(HttpHost::create)
+						.toArray(HttpHost[]::new);
 			}
 
 		}
 
-		enum StorageType {
+		static class CassandraStorage {
 
-			ELASTICSEARCH, CASSANDRA, STDOUT
+			final String keyspace;
+
+			final String[] addresses;
+
+			CassandraStorage(String keyspace, String addresses) {
+				this.keyspace = keyspace;
+				this.addresses = addresses.split(",");
+			}
 
 		}
 
 	}
 
+	enum StorageType {
+
+		ELASTICSEARCH, CASSANDRA, STDOUT
+
+	}
+
 	static AppConfig build(Config config) {
-		final KafkaStream kafkaStream = new KafkaStream(
+		final var topics = new KafkaStreams.Topics(config.getString("topics.span"),
+				config.getString("topics.dependency"));
+		final var kafkaStream = new KafkaStreams(
 				config.getString("kafka-streams.bootstrap-servers"),
-				config.getString("kafka-streams.application-id"));
-		final var storageType = config.getEnum(Zipkin.StorageType.class,
-				"zipkin.storage.type");
-		Zipkin.Storage.ElasticsearchStorage elasticseach = null;
-		Zipkin.Storage.CassandraStorage cassandra = null;
+				config.getString("kafka-streams.application-id"), topics);
+		final var storageType = config.getEnum(StorageType.class, "storage.type");
+		Storage.ElasticsearchStorage elasticseach = null;
+		Storage.CassandraStorage cassandra = null;
 		switch (storageType) {
 		case ELASTICSEARCH:
-			elasticseach = new Zipkin.Storage.ElasticsearchStorage(
-					config.getString("zipkin.storage.elasticsearch.index"),
-					config.getString("zipkin.storage.elasticsearch.urls"),
-					config.getString("zipkin.storage.elasticsearch.date-separator"));
+			elasticseach = new Storage.ElasticsearchStorage(
+					config.getString("storage.elasticsearch.index"),
+					config.getString("storage.elasticsearch.urls"),
+					config.getString("storage.elasticsearch.date-separator"));
 			break;
 		case CASSANDRA:
-			cassandra = new Zipkin.Storage.CassandraStorage(
-					config.getString("zipkin.storage.cassandra.keyspace"),
-					config.getString("zipkin.storage.cassandra.addresses"));
+			cassandra = new Storage.CassandraStorage(
+					config.getString("storage.cassandra.keyspace"),
+					config.getString("storage.cassandra.addresses"));
 			break;
 		}
-		final Zipkin zipkin = new Zipkin(config.getString("zipkin.format"),
-				new Zipkin.Storage(storageType, elasticseach, cassandra),
-				new Zipkin.Topics(config.getString("zipkin.topics.span"),
-						config.getString("zipkin.topics.dependency")));
-		return new AppConfig(kafkaStream, zipkin);
+		final var format = config.getString("format");
+		final var storage = new Storage(storageType, elasticseach, cassandra);
+		return new AppConfig(kafkaStream, format, storage);
 	}
 
 }

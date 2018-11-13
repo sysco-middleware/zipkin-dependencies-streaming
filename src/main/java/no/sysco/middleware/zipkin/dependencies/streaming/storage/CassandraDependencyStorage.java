@@ -5,13 +5,13 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import no.sysco.middleware.zipkin.dependencies.streaming.DependencyStorage;
 import zipkin2.DependencyLink;
 
-public class CassandraDepedencyStorage implements DependencyStorage {
+public class CassandraDependencyStorage implements DependencyStorage {
 
 	final String keyspace;
 
 	final Session session;
 
-	public CassandraDepedencyStorage(String keyspace, String[] addresses) {
+	public CassandraDependencyStorage(String keyspace, String[] addresses) {
 		this.keyspace = keyspace;
 		var cluster = Cluster.builder().addContactPoints(addresses).build();
 		this.session = cluster.connect();
