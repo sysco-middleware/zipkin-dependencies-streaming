@@ -29,7 +29,7 @@ public class ZipkinDependenciesStream {
 		Runtime.getRuntime().addShutdownHook(new Thread(dependencyStorage::close));
 	}
 
-	static DependencyStorage buildStorage(AppConfig appConfig) {
+	private static DependencyStorage buildStorage(AppConfig appConfig) {
 		switch (appConfig.storage.type) {
 		case ELASTICSEARCH:
 			final var restHighLevelClient = new RestHighLevelClient(

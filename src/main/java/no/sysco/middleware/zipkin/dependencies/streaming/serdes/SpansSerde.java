@@ -12,9 +12,9 @@ import java.util.Map;
 
 public class SpansSerde implements Serde<List<Span>> {
 
-	final SpanBytesDecoder spanBytesDecoder;
+	private final SpanBytesDecoder spanBytesDecoder;
 
-	final SpanBytesEncoder spanBytesEncoder;
+	private final SpanBytesEncoder spanBytesEncoder;
 
 	public SpansSerde(String format) {
 		this.spanBytesDecoder = SpanBytesDecoder.valueOf(format);

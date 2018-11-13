@@ -12,7 +12,7 @@ public class StdoutDependencyStorage implements DependencyStorage {
 
 	@Override
 	public void close() {
-		//Do nothing
+		// Do nothing
 	}
 
 }

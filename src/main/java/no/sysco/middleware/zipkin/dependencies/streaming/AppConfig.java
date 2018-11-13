@@ -120,7 +120,8 @@ class AppConfig {
 	}
 
 	static AppConfig build(Config config) {
-		final var topics = new KafkaStreams.Topics(config.getString("kafka-streams.topics.span"),
+		final var topics = new KafkaStreams.Topics(
+				config.getString("kafka-streams.topics.span"),
 				config.getString("kafka-streams.topics.dependency"));
 		final var kafkaStream = new KafkaStreams(
 				config.getString("kafka-streams.bootstrap-servers"),

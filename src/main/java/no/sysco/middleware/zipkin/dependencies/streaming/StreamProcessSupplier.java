@@ -1,45 +1,45 @@
 package no.sysco.middleware.zipkin.dependencies.streaming;
 
+import java.nio.charset.Charset;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import no.sysco.middleware.zipkin.dependencies.streaming.serdes.DependencyLinkSerde;
-import no.sysco.middleware.zipkin.dependencies.streaming.serdes.DependencyLinksSerde;
 import no.sysco.middleware.zipkin.dependencies.streaming.serdes.SpanSerde;
 import no.sysco.middleware.zipkin.dependencies.streaming.serdes.SpansSerde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.Serialized;
+import org.apache.kafka.streams.kstream.TimeWindows;
 import zipkin2.DependencyLink;
 import zipkin2.Span;
 import zipkin2.codec.SpanBytesDecoder;
 import zipkin2.internal.DependencyLinker;
 
-import java.nio.charset.Charset;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-
 class StreamProcessSupplier {
 
-	static final Charset UTF_8 = Charset.forName("UTF-8");
+	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-	static final String DEPENDENCY_PAIR_PATTERN = "%s|%s";
+	private static final String DEPENDENCY_PAIR_PATTERN = "%s|%s";
 
-	final SpanBytesDecoder spanBytesDecoder;
+	private final SpanBytesDecoder spanBytesDecoder;
 
-	final SpanSerde spanSerde;
+	private final SpanSerde spanSerde;
 
-	final SpansSerde spansSerde;
+	private final SpansSerde spansSerde;
 
-	final DependencyStorage dependencyStorage;
+	private final DependencyStorage dependencyStorage;
 
-	final String spanTopic;
+	private final String spanTopic;
 
-	final String dependencyTopic;
+	private final String dependencyTopic;
 
-	final DependencyLinkSerde dependencyLinkSerde;
-
-	final DependencyLinksSerde dependencyLinksSerde;
+	private final DependencyLinkSerde dependencyLinkSerde;
 
 	StreamProcessSupplier(String format, DependencyStorage dependencyStorage,
 			String spanTopic, String dependencyTopic) {
@@ -50,7 +50,6 @@ class StreamProcessSupplier {
 		this.spanSerde = new SpanSerde(format);
 		this.spansSerde = new SpansSerde(format);
 		this.dependencyLinkSerde = new DependencyLinkSerde();
-		this.dependencyLinksSerde = new DependencyLinksSerde();
 	}
 
 	StreamProcessSupplier(DependencyStorage dependencyStorage, String spanTopic,

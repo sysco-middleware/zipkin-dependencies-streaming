@@ -2,7 +2,6 @@ package no.sysco.middleware.zipkin.dependencies.streaming.storage;
 
 import no.sysco.middleware.zipkin.dependencies.streaming.DependencyStorage;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import zipkin2.DependencyLink;
@@ -12,18 +11,18 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 
 public class ElasticsearchDependencyStorage implements DependencyStorage {
 
-	final RestHighLevelClient restHighLevelClient;
-	static final String indexPattern = "%s:dependency-%s";
+	private static final String indexPattern = "%s:dependency-%s";
 
-	final String index;
+	private final RestHighLevelClient restHighLevelClient;
 
-	final String dateSeparator;
+	private final String index;
+
+	private final String dateSeparator;
 
 	public ElasticsearchDependencyStorage(RestHighLevelClient restHighLevelClient,
 			String index, String dateSeparator) {
@@ -62,7 +61,8 @@ public class ElasticsearchDependencyStorage implements DependencyStorage {
 	public void close() {
 		try {
 			restHighLevelClient.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

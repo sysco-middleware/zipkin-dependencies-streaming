@@ -11,8 +11,9 @@ import java.util.Map;
 
 public class SpanSerde implements Serde<Span> {
 
-	final SpanBytesDecoder spanBytesDecoder;
-	final SpanBytesEncoder spanBytesEncoder;
+	private final SpanBytesDecoder spanBytesDecoder;
+
+	private final SpanBytesEncoder spanBytesEncoder;
 
 	public SpanSerde(String format) {
 		spanBytesDecoder = SpanBytesDecoder.valueOf(format);
@@ -21,12 +22,12 @@ public class SpanSerde implements Serde<Span> {
 
 	@Override
 	public void configure(Map<String, ?> configs, boolean isKey) {
-		//Nothing to configure
+		// Nothing to configure
 	}
 
 	@Override
 	public void close() {
-		//No resources to close
+		// No resources to close
 	}
 
 	@Override
@@ -43,7 +44,7 @@ public class SpanSerde implements Serde<Span> {
 
 		@Override
 		public void configure(Map<String, ?> configs, boolean isKey) {
-			//Nothing to configure
+			// Nothing to configure
 		}
 
 		@Override
@@ -53,7 +54,7 @@ public class SpanSerde implements Serde<Span> {
 
 		@Override
 		public void close() {
-			//No resources to close
+			// No resources to close
 		}
 
 	}
@@ -62,7 +63,7 @@ public class SpanSerde implements Serde<Span> {
 
 		@Override
 		public void configure(Map<String, ?> configs, boolean isKey) {
-			//Nothing to configure
+			// Nothing to configure
 		}
 
 		@Override
@@ -72,7 +73,7 @@ public class SpanSerde implements Serde<Span> {
 
 		@Override
 		public void close() {
-			//No resources to close
+			// No resources to close
 		}
 
 	}

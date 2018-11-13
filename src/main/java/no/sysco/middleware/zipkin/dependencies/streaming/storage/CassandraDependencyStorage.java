@@ -7,14 +7,11 @@ import zipkin2.DependencyLink;
 
 public class CassandraDependencyStorage implements DependencyStorage {
 
-	final String keyspace;
+	private final Session session;
 
-	final Session session;
-
-	final PreparedStatement prepared;
+	private final PreparedStatement prepared;
 
 	public CassandraDependencyStorage(String keyspace, String[] addresses) {
-		this.keyspace = keyspace;
 		final var cluster = Cluster.builder().addContactPoints(addresses).build();
 		this.session = cluster.connect();
 		this.prepared = session.prepare(QueryBuilder.insertInto(keyspace, "dependency")
