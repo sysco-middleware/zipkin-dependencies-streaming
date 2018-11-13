@@ -5,85 +5,101 @@ digraph G {
 	graph [labelloc=top,label="kafka-streams topology",fontname="Verdana",fontsize=12];
 	edge [fontname="Verdana",fontsize=9,labelfontname="Verdana",labelfontsize=9];
 	node [fontname="Verdana",fontsize=9,shape=record];
-subgraph cluster_c12 {
+subgraph cluster_c13 {
 label = "Sub-Topology: 1";
 	c1 [label="Topic: KSTREAM-AGGREGATE-STATE-STORE-0000000004-repartition"]
 	// null
-	c1 -> c13 [];
-	c13 [label="Source: KSTREAM-SOURCE-0000000008"]
-	c14 [label="Processor: KSTREAM-AGGREGATE-0000000005"]
-	// null
-	c13 -> c14 [];
-	// null
-	c14 -> c3 [];
-	c15 [label="Processor: KTABLE-TOSTREAM-0000000009"]
+	c1 -> c14 [];
+	c14 [label="Source: KSTREAM-SOURCE-0000000008"]
+	c15 [label="Processor: KSTREAM-AGGREGATE-0000000005"]
 	// null
 	c14 -> c15 [];
-	c16 [label="Processor: KSTREAM-MAPVALUES-0000000010"]
+	// null
+	c15 -> c4 [];
+	c16 [label="Processor: KTABLE-TOSTREAM-0000000009"]
 	// null
 	c15 -> c16 [];
-	c17 [label="Processor: KSTREAM-FLATMAPVALUES-0000000011"]
+	c17 [label="Processor: KSTREAM-MAPVALUES-0000000010"]
 	// null
 	c16 -> c17 [];
-	c18 [label="Processor: KSTREAM-KEY-SELECT-0000000012"]
+	c18 [label="Processor: KSTREAM-FLATMAPVALUES-0000000011"]
 	// null
 	c17 -> c18 [];
-	c19 [label="Processor: KSTREAM-FILTER-0000000016"]
+	c19 [label="Processor: KSTREAM-KEY-SELECT-0000000012"]
 	// null
 	c18 -> c19 [];
-	c20 [label="Sink: KSTREAM-SINK-0000000015"]
+	c20 [label="Processor: KSTREAM-FILTER-0000000016"]
 	// null
 	c19 -> c20 [];
+	c21 [label="Sink: KSTREAM-SINK-0000000015"]
 	// null
-	c20 -> c2 [];
+	c20 -> c21 [];
+	// null
+	c21 -> c2 [];
 }
-subgraph cluster_c21 {
+subgraph cluster_c22 {
 label = "Sub-Topology: 2";
 	c2 [label="Topic: KSTREAM-REDUCE-STATE-STORE-0000000013-repartition"]
 	// null
-	c2 -> c22 [];
-	c22 [label="Source: KSTREAM-SOURCE-0000000017"]
-	c23 [label="Processor: KSTREAM-REDUCE-0000000014"]
-	// null
-	c23 -> c4 [];
-	// null
-	c22 -> c23 [];
-	c24 [label="Processor: KTABLE-TOSTREAM-0000000018"]
+	c2 -> c23 [];
+	c23 [label="Source: KSTREAM-SOURCE-0000000017"]
+	c24 [label="Processor: KSTREAM-REDUCE-0000000014"]
 	// null
 	c23 -> c24 [];
-	c25 [label="Processor: KSTREAM-FOREACH-0000000019"]
+	// null
+	c24 -> c5 [];
+	c25 [label="Processor: KTABLE-TOSTREAM-0000000018"]
 	// null
 	c24 -> c25 [];
+	c26 [label="Processor: KSTREAM-MAP-0000000019"]
+	// null
+	c25 -> c26 [];
+	c27 [label="Sink: KSTREAM-SINK-0000000020"]
+	// null
+	c27 -> c3 [];
+	// null
+	c26 -> c27 [];
 }
-subgraph cluster_c5 {
+subgraph cluster_c28 {
+label = "Sub-Topology: 3";
+	c29 [label="Source: KSTREAM-SOURCE-0000000021"]
+	c3 [label="Topic: zipkin-dependency"]
+	// null
+	c3 -> c29 [];
+	c30 [label="Processor: KSTREAM-FOREACH-0000000022"]
+	// null
+	c29 -> c30 [];
+}
+subgraph cluster_c6 {
 label = "Sub-Topology: 0";
 	c0 [label="Topic: zipkin"]
 	// null
-	c0 -> c6 [];
-	c10 [label="Processor: KSTREAM-FILTER-0000000007"]
+	c0 -> c7 [];
+	c10 [label="Processor: KSTREAM-KEY-SELECT-0000000003"]
 	// null
 	c9 -> c10 [];
-	c11 [label="Sink: KSTREAM-SINK-0000000006"]
+	c11 [label="Processor: KSTREAM-FILTER-0000000007"]
 	// null
 	c10 -> c11 [];
+	c12 [label="Sink: KSTREAM-SINK-0000000006"]
 	// null
-	c11 -> c1 [];
-	c6 [label="Source: KSTREAM-SOURCE-0000000000"]
-	c7 [label="Processor: KSTREAM-MAPVALUES-0000000001"]
+	c11 -> c12 [];
 	// null
-	c6 -> c7 [];
-	c8 [label="Processor: KSTREAM-FLATMAPVALUES-0000000002"]
+	c12 -> c1 [];
+	c7 [label="Source: KSTREAM-SOURCE-0000000000"]
+	c8 [label="Processor: KSTREAM-MAPVALUES-0000000001"]
 	// null
 	c7 -> c8 [];
-	c9 [label="Processor: KSTREAM-KEY-SELECT-0000000003"]
+	c9 [label="Processor: KSTREAM-FLATMAPVALUES-0000000002"]
 	// null
 	c8 -> c9 [];
 }
 	c0 [label="Topic: zipkin", shape=cds]
 	c1 [label="Topic: KSTREAM-AGGREGATE-STATE-STORE-0000000004-repartition", shape=cds]
 	c2 [label="Topic: KSTREAM-REDUCE-STATE-STORE-0000000013-repartition", shape=cds]
-	c3 [label="Store: KSTREAM-AGGREGATE-STATE-STORE-0000000004", shape=box3d]
-	c4 [label="Store: KSTREAM-REDUCE-STATE-STORE-0000000013", shape=box3d]
+	c3 [label="Topic: zipkin-dependency", shape=cds]
+	c4 [label="Store: KSTREAM-AGGREGATE-STATE-STORE-0000000004", shape=box3d]
+	c5 [label="Store: KSTREAM-REDUCE-STATE-STORE-0000000013", shape=box3d]
 }
 
 @enduml
