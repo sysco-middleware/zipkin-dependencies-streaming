@@ -15,6 +15,7 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Serialized;
+import org.apache.kafka.streams.kstream.SessionWindows;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import zipkin2.DependencyLink;
 import zipkin2.Span;
@@ -81,7 +82,7 @@ class StreamProcessSupplier {
 						(key, value) -> String.format(DEPENDENCY_PAIR_PATTERN,
 								value.parent(), value.child()),
 						Serialized.with(Serdes.String(), dependencyLinkSerde))
-				.windowedBy(TimeWindows.of(timeWindow.toMillis()))
+				.windowedBy(SessionWindows.with(timeWindow.toMillis()))
 				.reduce((l, r) -> DependencyLink.newBuilder().parent(l.parent())
 						.child(l.child()).callCount(l.callCount() + r.callCount())
 						.errorCount(l.errorCount() + r.errorCount()).build())
