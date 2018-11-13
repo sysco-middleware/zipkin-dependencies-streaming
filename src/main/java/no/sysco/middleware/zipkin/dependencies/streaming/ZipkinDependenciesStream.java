@@ -26,6 +26,7 @@ public class ZipkinDependenciesStream {
 		kafkaStreams.start();
 
 		Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
+		Runtime.getRuntime().addShutdownHook(new Thread(dependencyStorage::close));
 	}
 
 	static DependencyStorage buildStorage(AppConfig appConfig) {
@@ -39,7 +40,7 @@ public class ZipkinDependenciesStream {
 					dateSeparator);
 		case CASSANDRA:
 			final var keyspace = appConfig.storage.cassandra.keyspace;
-			final var addresses = appConfig.storage.cassandra.addresses;
+			final var addresses = appConfig.storage.cassandra.contactPoints;
 			return new CassandraDependencyStorage(keyspace, addresses);
 		case STDOUT:
 			return new StdoutDependencyStorage();

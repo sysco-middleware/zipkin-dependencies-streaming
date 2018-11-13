@@ -102,11 +102,11 @@ class AppConfig {
 
 			final String keyspace;
 
-			final String[] addresses;
+			final String[] contactPoints;
 
-			CassandraStorage(String keyspace, String addresses) {
+			CassandraStorage(String keyspace, String contactPoints) {
 				this.keyspace = keyspace;
-				this.addresses = addresses.split(",");
+				this.contactPoints = contactPoints.split(",");
 			}
 
 		}
@@ -120,8 +120,8 @@ class AppConfig {
 	}
 
 	static AppConfig build(Config config) {
-		final var topics = new KafkaStreams.Topics(config.getString("topics.span"),
-				config.getString("topics.dependency"));
+		final var topics = new KafkaStreams.Topics(config.getString("kafka-streams.topics.span"),
+				config.getString("kafka-streams.topics.dependency"));
 		final var kafkaStream = new KafkaStreams(
 				config.getString("kafka-streams.bootstrap-servers"),
 				config.getString("kafka-streams.application-id"), topics);
@@ -138,7 +138,7 @@ class AppConfig {
 		case CASSANDRA:
 			cassandra = new Storage.CassandraStorage(
 					config.getString("storage.cassandra.keyspace"),
-					config.getString("storage.cassandra.addresses"));
+					config.getString("storage.cassandra.contact-points"));
 			break;
 		}
 		final var format = config.getString("format");

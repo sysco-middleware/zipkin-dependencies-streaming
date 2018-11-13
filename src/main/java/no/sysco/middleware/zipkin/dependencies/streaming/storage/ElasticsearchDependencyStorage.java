@@ -58,4 +58,13 @@ public class ElasticsearchDependencyStorage implements DependencyStorage {
 		}
 	}
 
+	@Override
+	public void close() {
+		try {
+			restHighLevelClient.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

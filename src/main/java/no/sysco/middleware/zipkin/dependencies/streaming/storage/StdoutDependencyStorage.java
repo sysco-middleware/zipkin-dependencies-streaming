@@ -10,4 +10,9 @@ public class StdoutDependencyStorage implements DependencyStorage {
 		System.out.printf("%s=>%s%n", start, dependencyLink);
 	}
 
+	@Override
+	public void close() {
+		//Do nothing
+	}
+
 }

@@ -11,20 +11,22 @@ public class CassandraDependencyStorage implements DependencyStorage {
 
 	final Session session;
 
+	final PreparedStatement prepared;
+
 	public CassandraDependencyStorage(String keyspace, String[] addresses) {
 		this.keyspace = keyspace;
-		var cluster = Cluster.builder().addContactPoints(addresses).build();
+		final var cluster = Cluster.builder().addContactPoints(addresses).build();
 		this.session = cluster.connect();
-	}
-
-	@Override
-	public void put(Long start, DependencyLink dependencyLink) {
-		final var prepared = session.prepare(QueryBuilder.insertInto(keyspace, "dependency")
+		this.prepared = session.prepare(QueryBuilder.insertInto(keyspace, "dependency")
 				.value("day", QueryBuilder.bindMarker("day"))
 				.value("parent", QueryBuilder.bindMarker("parent"))
 				.value("child", QueryBuilder.bindMarker("child"))
 				.value("calls", QueryBuilder.bindMarker("calls"))
 				.value("errors", QueryBuilder.bindMarker("errors")));
+	}
+
+	@Override
+	public void put(Long start, DependencyLink dependencyLink) {
 		final var bound = prepared.bind()
 				.setDate("day", LocalDate.fromMillisSinceEpoch(start))
 				.setString("parent", dependencyLink.parent())
@@ -34,6 +36,11 @@ public class CassandraDependencyStorage implements DependencyStorage {
 			bound.setLong("errors", dependencyLink.errorCount());
 		}
 		session.execute(bound);
+	}
+
+	@Override
+	public void close() {
+		session.close();
 	}
 
 }
