@@ -41,21 +41,24 @@ class StreamProcessSupplier {
 
 	private final DependencyLinkSerde dependencyLinkSerde;
 
+	private final Duration timeWindow;
+
 	StreamProcessSupplier(String format, DependencyStorage dependencyStorage,
-			String spanTopic, String dependencyTopic) {
+			String spanTopic, String dependencyTopic, Duration timeWindow) {
 		this.dependencyStorage = dependencyStorage;
 		this.spanTopic = spanTopic;
 		this.dependencyTopic = dependencyTopic;
 		this.spanBytesDecoder = SpanBytesDecoder.valueOf(format);
 		this.spanSerde = new SpanSerde(format);
 		this.spansSerde = new SpansSerde(format);
+		this.timeWindow = timeWindow;
 		this.dependencyLinkSerde = new DependencyLinkSerde();
 	}
 
 	StreamProcessSupplier(DependencyStorage dependencyStorage, String spanTopic,
-			String dependencyTopic) {
+			String dependencyTopic, Duration timeWindow) {
 		this(SpanBytesDecoder.JSON_V2.name(), dependencyStorage, spanTopic,
-				dependencyTopic);
+				dependencyTopic, timeWindow);
 	}
 
 	Topology build() {
@@ -78,7 +81,7 @@ class StreamProcessSupplier {
 						(key, value) -> String.format(DEPENDENCY_PAIR_PATTERN,
 								value.parent(), value.child()),
 						Serialized.with(Serdes.String(), dependencyLinkSerde))
-				.windowedBy(TimeWindows.of(Duration.ofMinutes(5).toMillis()))
+				.windowedBy(TimeWindows.of(timeWindow.toMillis()))
 				.reduce((l, r) -> DependencyLink.newBuilder().parent(l.parent())
 						.child(l.child()).callCount(l.callCount() + r.callCount())
 						.errorCount(l.errorCount() + r.errorCount()).build())

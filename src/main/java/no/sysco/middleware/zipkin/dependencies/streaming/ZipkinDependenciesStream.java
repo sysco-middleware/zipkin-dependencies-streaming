@@ -17,7 +17,7 @@ public class ZipkinDependenciesStream {
 		final var dependencyStorage = buildStorage(appConfig);
 		final var streamProcess = new StreamProcessSupplier(appConfig.format,
 				dependencyStorage, appConfig.kafkaStreams.topics.span,
-				appConfig.kafkaStreams.topics.dependency);
+				appConfig.kafkaStreams.topics.dependency, appConfig.timeWindow);
 		final var topology = streamProcess.build();
 
 		final var kafkaStreams = new KafkaStreams(topology,
