@@ -1,6 +1,7 @@
-package no.sysco.middleware.zipkin.dependencies.streaming;
+package no.sysco.middleware.zipkin.dependencies.streaming.tools;
 
 import no.sysco.middleware.kafka.util.StreamsTopologyGraphviz;
+import no.sysco.middleware.zipkin.dependencies.streaming.StreamProcessSupplier;
 import no.sysco.middleware.zipkin.dependencies.streaming.storage.StdoutDependencyStorage;
 
 import java.io.IOException;

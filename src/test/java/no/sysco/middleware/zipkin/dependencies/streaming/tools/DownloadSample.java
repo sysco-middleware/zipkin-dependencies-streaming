@@ -1,4 +1,4 @@
-package no.sysco.middleware.zipkin.dependencies.streaming;
+package no.sysco.middleware.zipkin.dependencies.streaming.tools;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

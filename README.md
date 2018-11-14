@@ -37,7 +37,7 @@ Run: `docker-compose up -d` to start a Zipkin server with Elasticsearch storage,
 
 #### Test
 
-Run: `src/test/java/no/sysco/middleware/zipkin/dependencies/streaming/SpanKafkaProducer.java` that will use the `spans.json` file to push spans via Kafka.
+Run: `src/test/java/no/sysco/middleware/zipkin/dependencies/streaming/tools/SpanKafkaProducer.java` that will use the `spans.json` file to push spans via Kafka.
 
 In less than 1 minutes, dependencies should be available under  <http://localhost:9411/zipkin/dependency/>
 

@@ -9,6 +9,10 @@ format:
 build: format
 	mvn clean compile
 
+.PHONY: test
+test: build
+	mvn test
+
 .PHONY: local-docker
 local-docker: build
 	mvn jib:dockerBuild

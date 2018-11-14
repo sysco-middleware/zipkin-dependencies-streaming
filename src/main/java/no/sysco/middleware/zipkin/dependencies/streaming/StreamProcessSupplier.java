@@ -18,7 +18,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-class StreamProcessSupplier {
+public class StreamProcessSupplier {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
@@ -52,13 +52,13 @@ class StreamProcessSupplier {
 		this.dependencyLinkSerde = new DependencyLinkSerde();
 	}
 
-	StreamProcessSupplier(DependencyStorage dependencyStorage, String spanTopic,
+	public StreamProcessSupplier(DependencyStorage dependencyStorage, String spanTopic,
 			String dependencyTopic, Duration timeWindow) {
 		this(SpanBytesDecoder.JSON_V2.name(), dependencyStorage, spanTopic,
 				dependencyTopic, timeWindow);
 	}
 
-	Topology build() {
+	public Topology build() {
 		var builder = new StreamsBuilder();
 		builder.stream(spanTopic, Consumed.with(Serdes.String(), Serdes.String()))
 				.mapValues(value -> spanBytesDecoder.decodeList(value.getBytes(UTF_8)))
@@ -78,8 +78,10 @@ class StreamProcessSupplier {
 				.mapValues(
 						value -> new DependencyLinker().putTrace(value.iterator()).link())
 				.flatMapValues(value -> value)
-				.groupBy((key, value) -> String.format(DEPENDENCY_PAIR_PATTERN,
-						value.parent(), value.child()), Serialized.with(Serdes.String(), dependencyLinkSerde))
+				.groupBy(
+						(key, value) -> String.format(DEPENDENCY_PAIR_PATTERN,
+								value.parent(), value.child()),
+						Serialized.with(Serdes.String(), dependencyLinkSerde))
 				.windowedBy(SessionWindows.with(timeWindow.toMillis()))
 				.reduce((l, r) -> DependencyLink.newBuilder().parent(l.parent())
 						.child(l.child()).callCount(l.callCount() + r.callCount())
