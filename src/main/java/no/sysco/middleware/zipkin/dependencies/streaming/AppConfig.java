@@ -5,7 +5,6 @@ import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
@@ -17,15 +16,11 @@ class AppConfig {
 
 	final String format;
 
-	final Duration timeWindow;
-
 	final Storage storage;
 
-	private AppConfig(KafkaStreams kafkaStreams, String format, Duration timeWindow,
-			Storage storage) {
+	private AppConfig(KafkaStreams kafkaStreams, String format, Storage storage) {
 		this.kafkaStreams = kafkaStreams;
 		this.format = format;
-		this.timeWindow = timeWindow;
 		this.storage = storage;
 	}
 
@@ -148,9 +143,8 @@ class AppConfig {
 			break;
 		}
 		final var format = config.getString("format");
-		final var timeWindow = config.getDuration("time-window");
 		final var storage = new Storage(storageType, elasticseach, cassandra);
-		return new AppConfig(kafkaStream, format, timeWindow, storage);
+		return new AppConfig(kafkaStream, format, storage);
 	}
 
 }
