@@ -23,7 +23,7 @@ public class GraphvizTopology {
 			buffer.newLine();
 			buffer.write(StreamsTopologyGraphviz
 					.print(new StreamProcessSupplier(new StdoutDependencyStorage(),
-							"zipkin", "zipkin-dependency", Duration.ofMinutes(1)).build())
+							"zipkin", "zipkin-dependency").build())
 					// Support plantuml comment line
 					.replace("#", "'"));
 			buffer.newLine();

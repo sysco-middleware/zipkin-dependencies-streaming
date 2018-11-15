@@ -41,6 +41,8 @@ public class DependencyLinkSerde implements Serde<DependencyLink> {
 
 		@Override
 		public DependencyLink deserialize(String topic, byte[] data) {
+			if (data == null)
+				return null;
 			return DependencyLinkBytesDecoder.JSON_V1.decodeOne(data);
 		}
 
@@ -60,6 +62,8 @@ public class DependencyLinkSerde implements Serde<DependencyLink> {
 
 		@Override
 		public byte[] serialize(String topic, DependencyLink data) {
+			if (data == null)
+				return null;
 			return DependencyLinkBytesEncoder.JSON_V1.encode(data);
 		}
 
