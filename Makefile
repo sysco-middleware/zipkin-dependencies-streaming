@@ -24,3 +24,8 @@ publish-docker: build
 .PHONY: dc-up
 dc-up:
 	docker-compose up -d
+
+.PHONY: release
+release:
+	mvn release:prepare
+	mvn release:perform
