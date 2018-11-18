@@ -12,12 +12,13 @@ import zipkin2.DependencyLink;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
 
 public class StreamProcessSupplierTest {
 
@@ -36,7 +37,7 @@ public class StreamProcessSupplierTest {
 	}
 
 	@Test
-	public void shouldReturn() throws Exception {
+	public void should_createDependenciesFromInputFile() throws Exception {
 		final var spanTopic = "spans";
 		final var dependencyTopic = "dependencies";
 		final var streamSupplier = new StreamProcessSupplier(new TestDependencyStorage(),
@@ -62,19 +63,27 @@ public class StreamProcessSupplierTest {
 		final var json = new String(jsonBytes, UTF_8);
 
 		testDriver.pipeInput(factory.create(json));
-		testDriver.advanceWallClockTime(Duration.ofMinutes(30).toMillis());
 
-		int i = 0;
+		final var counters = new HashMap<String, Long>();
+
+		var i = 0;
 		ProducerRecord<String, DependencyLink> output;
+
 		do {
 			output = testDriver.readOutput(dependencyTopic,
 					Serdes.String().deserializer(), dependencySerde.deserializer());
 			if (output != null) {
-				System.out.println(i + " " + output);
+				DependencyLink dependencyLink = output.value();
+				System.out.println(i + " " + dependencyLink);
 				i++;
+				counters.put(dependencyLink.parent() + "|" + dependencyLink.child(), dependencyLink.callCount() );
 			}
 		}
 		while (output != null);
+
+		assertEquals(Long.valueOf(4L), counters.getOrDefault("kafka|servicea", 0L));
+		assertEquals(Long.valueOf(9L), counters.getOrDefault("servicea|kafka", 0L));
+		assertEquals(Long.valueOf(3L), counters.getOrDefault("kafka|serviceb", 0L));
 	}
 
 }

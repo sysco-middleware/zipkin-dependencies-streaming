@@ -8,6 +8,12 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
+/**
+ * Streaming version of Zipkin Dependencies application. It collect Span from a Kafka topic
+ * and define Dependencies to be stored a Zipkin Storage.
+ *
+ * See more {@link AppConfig}
+ */
 public class ZipkinDependenciesStream {
 
 	public static void main(String[] args) {

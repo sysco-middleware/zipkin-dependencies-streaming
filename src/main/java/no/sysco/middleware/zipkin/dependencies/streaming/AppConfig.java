@@ -10,6 +10,9 @@ import java.util.Properties;
 
 import static org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST;
 
+/**
+ * Application configuration properties.
+ */
 class AppConfig {
 
 	final KafkaStreams kafkaStreams;
@@ -119,6 +122,13 @@ class AppConfig {
 
 	}
 
+	/**
+	 * Load properties from Configuration file. It includes Kafka-Stream configuration, Zipkin format, and
+	 * Storage type configuration.
+	 *
+	 * @param config Loaded configuration.
+	 * @return Application configuration properties.
+	 */
 	static AppConfig build(Config config) {
 		final var topics = new KafkaStreams.Topics(
 				config.getString("kafka-streams.topics.span"),

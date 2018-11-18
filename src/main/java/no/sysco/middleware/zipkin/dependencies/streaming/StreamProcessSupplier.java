@@ -60,29 +60,29 @@ public class StreamProcessSupplier {
 		var builder = new StreamsBuilder();
 		builder.stream(spanTopic, Consumed.with(Serdes.String(), Serdes.String()))
 				.mapValues(value -> spanBytesDecoder.decodeList(value.getBytes(UTF_8)))
-				.flatMapValues((readOnlyKey, value) -> value)
-				.groupBy((key, value) -> value.traceId(),
+				.flatMapValues(decodedSpans -> decodedSpans)
+				.groupBy((none, span) -> span.traceId(),
 						Serialized.with(Serdes.String(), spanSerde))
 				.aggregate(ArrayList::new,
-						(String key, Span value, List<Span> aggregate) -> {
-							aggregate.add(value);
-							return aggregate;
+						(String traceId, Span span, List<Span> spans) -> {
+							spans.add(span);
+							return spans;
 						}, Materialized.with(Serdes.String(), spansSerde))
-				.toStream().filterNot((key, value) -> value.isEmpty())
+				.toStream().filterNot((traceId, spans) -> spans.isEmpty())
 				.mapValues(
-						value -> new DependencyLinker().putTrace(value.iterator()).link())
-				.flatMapValues(value -> value)
+						spans -> new DependencyLinker().putTrace(spans.iterator()).link())
+				.flatMapValues(dependencyLinks -> dependencyLinks)
 				.groupBy(
-						(key, value) -> String.format(DEPENDENCY_PAIR_PATTERN,
-								value.parent(), value.child()),
+						(traceId, dependencyLink) -> String.format(DEPENDENCY_PAIR_PATTERN,
+								dependencyLink.parent(), dependencyLink.child()),
 						Serialized.with(Serdes.String(), dependencyLinkSerde))
 				.reduce((l, r) -> r,
 						Materialized.with(Serdes.String(), dependencyLinkSerde))
 				.toStream()
 				.through(dependencyTopic,
 						Produced.with(Serdes.String(), dependencyLinkSerde))
-				.foreach((key, value) -> dependencyStorage
-						.put(LocalDate.now().toEpochDay(), value));
+				.foreach((dependencyPair, dependencyLink) -> dependencyStorage
+						.put(LocalDate.now().toEpochDay(), dependencyLink));
 		return builder.build();
 	}
 
