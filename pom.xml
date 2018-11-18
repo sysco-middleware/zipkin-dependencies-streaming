@@ -206,6 +206,16 @@
                     </to>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <updateBranchVersions>true</updateBranchVersions>
+                    <pushChanges>true</pushChanges>
+                    <releaseProfiles>release</releaseProfiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
