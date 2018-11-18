@@ -209,7 +209,7 @@
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <updateBranchVersions>true</updateBranchVersions>
                     <pushChanges>true</pushChanges>
