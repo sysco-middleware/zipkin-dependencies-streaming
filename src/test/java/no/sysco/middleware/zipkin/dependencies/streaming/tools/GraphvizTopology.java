@@ -1,13 +1,11 @@
 package no.sysco.middleware.zipkin.dependencies.streaming.tools;
 
-import no.sysco.middleware.kafka.util.StreamsTopologyGraphviz;
-import no.sysco.middleware.zipkin.dependencies.streaming.StreamProcessSupplier;
-import no.sysco.middleware.zipkin.dependencies.streaming.storage.StdoutDependencyStorage;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
+import no.sysco.middleware.kafka.util.StreamsTopologyGraphviz;
+import no.sysco.middleware.zipkin.dependencies.streaming.StreamProcessSupplier;
+import no.sysco.middleware.zipkin.dependencies.streaming.storage.StdoutDependencyStorage;
 
 public class GraphvizTopology {
 
