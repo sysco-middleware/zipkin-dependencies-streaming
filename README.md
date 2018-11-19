@@ -1,8 +1,9 @@
-# zipkin-service-graph-streaming
+# zipkin-dependencies-streaming
 
 [![Build Status](https://www.travis-ci.org/sysco-middleware/zipkin-dependencies-streaming.svg?branch=master)](https://www.travis-ci.org/sysco-middleware/zipkin-dependencies-streaming)
 
-Streaming service dependency from Zipkin spans using Kafka Streams.
+Streaming service dependencies from Zipkin spans using Kafka Streams. 
+Streaming version of <https://github.com/openzipkin/zipkin-dependencies>.
 
 ## How to use it
 
