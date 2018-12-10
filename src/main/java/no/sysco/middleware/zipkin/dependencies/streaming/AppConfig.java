@@ -52,13 +52,10 @@ class AppConfig {
 
 		static class Topics {
 
-			final String span;
+			final String spans;
 
-			final String dependency;
-
-			Topics(String span, String dependency) {
-				this.span = span;
-				this.dependency = dependency;
+			Topics(String spans) {
+				this.spans = spans;
 			}
 
 		}
@@ -123,25 +120,23 @@ class AppConfig {
 	}
 
 	/**
-	 * Load properties from Configuration file. It includes Kafka-Stream configuration, Zipkin format, and
-	 * Storage type configuration.
-	 *
+	 * Load properties from Configuration file. It includes Kafka-Stream configuration,
+	 * Zipkin format, and Storage type configuration.
 	 * @param config Loaded configuration.
 	 * @return Application configuration properties.
 	 */
 	static AppConfig build(Config config) {
 		final var topics = new KafkaStreams.Topics(
-				config.getString("kafka-streams.topics.span"),
-				config.getString("kafka-streams.topics.dependency"));
+				config.getString("kafka-streams.topics.spans"));
 		final var kafkaStream = new KafkaStreams(
 				config.getString("kafka-streams.bootstrap-servers"),
 				config.getString("kafka-streams.application-id"), topics);
 		final var storageType = config.getEnum(StorageType.class, "storage.type");
-		Storage.ElasticsearchStorage elasticseach = null;
+		Storage.ElasticsearchStorage elasticsearch = null;
 		Storage.CassandraStorage cassandra = null;
 		switch (storageType) {
 		case ELASTICSEARCH:
-			elasticseach = new Storage.ElasticsearchStorage(
+			elasticsearch = new Storage.ElasticsearchStorage(
 					config.getString("storage.elasticsearch.index"),
 					config.getString("storage.elasticsearch.urls"),
 					config.getString("storage.elasticsearch.date-separator"));
@@ -153,7 +148,7 @@ class AppConfig {
 			break;
 		}
 		final var format = config.getString("format");
-		final var storage = new Storage(storageType, elasticseach, cassandra);
+		final var storage = new Storage(storageType, elasticsearch, cassandra);
 		return new AppConfig(kafkaStream, format, storage);
 	}
 
