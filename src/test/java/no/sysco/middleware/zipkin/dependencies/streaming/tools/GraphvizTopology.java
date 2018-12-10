@@ -7,7 +7,6 @@ import no.sysco.middleware.zipkin.dependencies.streaming.storage.StdoutDependenc
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
 
 public class GraphvizTopology {
 
@@ -23,7 +22,7 @@ public class GraphvizTopology {
 			buffer.newLine();
 			buffer.write(StreamsTopologyGraphviz
 					.print(new StreamProcessSupplier(new StdoutDependencyStorage(),
-							"zipkin", "zipkin-dependency").build())
+							"zipkin").build())
 					// Support plantuml comment line
 					.replace("#", "'"));
 			buffer.newLine();

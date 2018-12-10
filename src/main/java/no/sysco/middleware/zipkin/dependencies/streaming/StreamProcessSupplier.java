@@ -8,7 +8,6 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Serialized;
 import zipkin2.Span;
 import zipkin2.codec.SpanBytesDecoder;
@@ -35,25 +34,20 @@ public class StreamProcessSupplier {
 
 	private final String spanTopic;
 
-	private final String dependencyTopic;
-
 	private final DependencyLinkSerde dependencyLinkSerde;
 
 	StreamProcessSupplier(String format, DependencyStorage dependencyStorage,
-			String spanTopic, String dependencyTopic) {
+			String spanTopic) {
 		this.dependencyStorage = dependencyStorage;
 		this.spanTopic = spanTopic;
-		this.dependencyTopic = dependencyTopic;
 		this.spanBytesDecoder = SpanBytesDecoder.valueOf(format);
 		this.spanSerde = new SpanSerde(format);
 		this.spansSerde = new SpansSerde(format);
 		this.dependencyLinkSerde = new DependencyLinkSerde();
 	}
 
-	public StreamProcessSupplier(DependencyStorage dependencyStorage, String spanTopic,
-			String dependencyTopic) {
-		this(SpanBytesDecoder.JSON_V2.name(), dependencyStorage, spanTopic,
-				dependencyTopic);
+	public StreamProcessSupplier(DependencyStorage dependencyStorage, String spanTopic) {
+		this(SpanBytesDecoder.JSON_V2.name(), dependencyStorage, spanTopic);
 	}
 
 	public Topology build() {
@@ -73,15 +67,13 @@ public class StreamProcessSupplier {
 						spans -> new DependencyLinker().putTrace(spans.iterator()).link())
 				.flatMapValues(dependencyLinks -> dependencyLinks)
 				.groupBy(
-						(traceId, dependencyLink) -> String.format(DEPENDENCY_PAIR_PATTERN,
-								dependencyLink.parent(), dependencyLink.child()),
+						(traceId, dependencyLink) -> String.format(
+								DEPENDENCY_PAIR_PATTERN, dependencyLink.parent(),
+								dependencyLink.child()),
 						Serialized.with(Serdes.String(), dependencyLinkSerde))
 				.reduce((l, r) -> r,
 						Materialized.with(Serdes.String(), dependencyLinkSerde))
-				.toStream()
-				.through(dependencyTopic,
-						Produced.with(Serdes.String(), dependencyLinkSerde))
-				.foreach((dependencyPair, dependencyLink) -> dependencyStorage
+				.toStream().foreach((dependencyPair, dependencyLink) -> dependencyStorage
 						.put(LocalDate.now().toEpochDay(), dependencyLink));
 		return builder.build();
 	}
