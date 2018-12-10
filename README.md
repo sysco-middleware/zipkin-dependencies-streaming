@@ -11,7 +11,7 @@ Streaming service dependency from Zipkin spans using Kafka Streams.
 | Key                     | Description                                                                                     | Default Value     |
 |-------------------------|-------------------------------------------------------------------------------------------------|-------------------|
 | KAFKA_BOOTSTRAP_SERVERS | Kafka Bootstrap Servers where Zipkin Kafka Reporters store Span.                                | localhost:29092   |
-| KAFKA_DEPENDENCY_TOPIC  | Kafka Topic where Zipkin Dependencies will be stored.                                           | zipkin-dependency |
+| TOPIC_SPANS             | Kafka Topic where Zipkin Spans are stored.                                                      | zipkin            |
 | FORMAT                  | Zipkin format. Options: JSON_V1, JSON_V2, PROTO3.                                               | JSON_V2           |
 | STORAGE_TYPE            | Storage where Zipkin dependencies will be forwarded. Options: STDOUT, ELASTICSEARCH, CASSANDRA. | STDOUT            |
 
