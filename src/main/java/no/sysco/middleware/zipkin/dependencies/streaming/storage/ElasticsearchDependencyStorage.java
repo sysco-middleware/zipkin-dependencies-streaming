@@ -9,17 +9,14 @@ import org.slf4j.LoggerFactory;
 import zipkin2.DependencyLink;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
-
-import static java.time.ZoneOffset.UTC;
 
 public class ElasticsearchDependencyStorage implements DependencyStorage {
 
 	static private final Logger LOGGER = LoggerFactory
-			.getLogger(CassandraDependencyStorage.class.getName());
+			.getLogger(ElasticsearchDependencyStorage.class.getName());
 
 	static private final String indexPattern = "%s:dependency-%s";
 
@@ -39,8 +36,7 @@ public class ElasticsearchDependencyStorage implements DependencyStorage {
 	@Override
 	public void put(Long start, DependencyLink dependencyLink) {
 		try {
-			final var dateTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(start),
-					UTC);
+			final var dateTime = LocalDate.ofEpochDay(start);
 			final var dateTimeFormatter = DateTimeFormatter
 					.ofPattern("yyyy-MM-dd".replace("-", dateSeparator));
 			final var dependencyIndex = String.format(indexPattern, index,

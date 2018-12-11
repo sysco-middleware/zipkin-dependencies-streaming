@@ -1,15 +1,12 @@
 ---
 version: '3'
 services:
-  zipkin-elasticsearch:
-    image: openzipkin/zipkin-elasticsearch5
-    ports:
-      - 19200:9200
   zipkin:
     image: openzipkin/zipkin
     environment:
-      - STORAGE_TYPE=elasticsearch
-      - ES_HOSTS=zipkin-elasticsearch
+      - SELF_TRACING_ENABLED=true
+      - STORAGE_TYPE=cassandra3
+      - CASSANDRA_CONTACT_POINTS=zipkin-cassandra
       - KAFKA_BOOTSTRAP_SERVERS=kafka-zookeeper:9092
     ports:
       - 9411:9411
@@ -23,5 +20,3 @@ services:
     image: syscomiddleware/zipkin-dependencies-streaming:0.1.4
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka-zookeeper:9092
-      - STORAGE_TYPE=ELASTICSEARCH
-      - ELASTICSEARCH_URLS=http://zipkin-elasticsearch:9200
