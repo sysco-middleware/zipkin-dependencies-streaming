@@ -4,6 +4,8 @@ import no.sysco.middleware.zipkin.dependencies.streaming.DependencyStorage;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import zipkin2.DependencyLink;
 
 import java.io.IOException;
@@ -16,7 +18,10 @@ import static java.time.ZoneOffset.UTC;
 
 public class ElasticsearchDependencyStorage implements DependencyStorage {
 
-	private static final String indexPattern = "%s:dependency-%s";
+	static private final Logger LOGGER = LoggerFactory
+			.getLogger(CassandraDependencyStorage.class.getName());
+
+	static private final String indexPattern = "%s:dependency-%s";
 
 	private final RestHighLevelClient restHighLevelClient;
 
@@ -51,8 +56,9 @@ public class ElasticsearchDependencyStorage implements DependencyStorage {
 			restHighLevelClient.index(
 					new IndexRequest(dependencyIndex, "dependency").source(result),
 					RequestOptions.DEFAULT);
+			LOGGER.info("DependencyLink stored: {}", dependencyLink);
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

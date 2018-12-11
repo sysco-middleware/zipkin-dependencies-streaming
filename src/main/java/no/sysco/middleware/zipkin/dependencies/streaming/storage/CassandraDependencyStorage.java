@@ -3,9 +3,14 @@ package no.sysco.middleware.zipkin.dependencies.streaming.storage;
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import no.sysco.middleware.zipkin.dependencies.streaming.DependencyStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import zipkin2.DependencyLink;
 
 public class CassandraDependencyStorage implements DependencyStorage {
+
+	static private final Logger LOGGER = LoggerFactory
+			.getLogger(CassandraDependencyStorage.class.getName());
 
 	private final Session session;
 
@@ -24,15 +29,21 @@ public class CassandraDependencyStorage implements DependencyStorage {
 
 	@Override
 	public void put(Long start, DependencyLink dependencyLink) {
-		final var bound = prepared.bind()
-				.setDate("day", LocalDate.fromMillisSinceEpoch(start))
-				.setString("parent", dependencyLink.parent())
-				.setString("child", dependencyLink.child())
-				.setLong("calls", dependencyLink.callCount());
-		if (dependencyLink.errorCount() > 0L) {
-			bound.setLong("errors", dependencyLink.errorCount());
+		try {
+			final var bound = prepared.bind()
+					.setDate("day", LocalDate.fromDaysSinceEpoch(start.intValue()))
+					.setString("parent", dependencyLink.parent())
+					.setString("child", dependencyLink.child())
+					.setLong("calls", dependencyLink.callCount());
+			if (dependencyLink.errorCount() > 0L) {
+				bound.setLong("errors", dependencyLink.errorCount());
+			}
+			session.execute(bound);
+			LOGGER.info("DependencyLink stored: {}", dependencyLink);
 		}
-		session.execute(bound);
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
