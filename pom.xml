@@ -44,7 +44,7 @@
 
         <kafka-util-graphviz>0.1.2</kafka-util-graphviz>
         <zipkin-sender-kafka11.version>2.7.9</zipkin-sender-kafka11.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
     <dependencies>
